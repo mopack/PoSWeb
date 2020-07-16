@@ -22,14 +22,9 @@ import java.text.SimpleDateFormat;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 
 
-@Repository
+
 public class JdbcMSConnect {
-	/*
-		Create	INSERT
-		Update	UPDATE
-		Delete	DELETE
-		Read	SELECT
-	 */
+
 	
 	/*public static void main(String args[]) {
 		Create("339", "{你家的火}");
