@@ -92,7 +92,7 @@ public class ChangeConsumer {
 			
 			for (ProposalResponse res: responses) {
 				Status status = res.getStatus();
-				response.put("status", status);
+				response.put("result", status);
 				Logger.getLogger(ChangeConsumer.class.getName()).log(Level.INFO, "Invoked " + Config.CHAINCODE_1_CHANGE_CONSUMER + " on "+Config.CHAINCODE_1_NAME + ". Status - " + status);
 			}
 		} catch (Exception e) {
@@ -104,7 +104,7 @@ public class ChangeConsumer {
 			System.out.println("ErrorType: " + e.getClass().getCanonicalName());
 			e.printStackTrace();
 			
-			response.put("status", e.getMessage());
+			response.put("result", e.getMessage());
 		}
 		return response.toString();
 	}

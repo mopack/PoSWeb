@@ -20,6 +20,9 @@ import org.hyperledger.fabric.sdk.EventHub;
 import org.hyperledger.fabric.sdk.Orderer;
 import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
+import org.json.JSONObject;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Invoke QueryAll Chaincode.
@@ -27,12 +30,16 @@ import org.hyperledger.fabric.sdk.ProposalResponse;
  * @author Mopack
  * @date 2020-07-14
  */
+@RestController
 public class QueryAll {
 
 	private static final byte[] EXPECTED_EVENT_DATA = "!".getBytes(UTF_8);
 	private static final String EXPECTED_EVENT_NAME = "event";
 
-	public static void main(String args[]) {
+	@RequestMapping("/QueryAll")
+	public String InvokeQueryAll() {
+		JSONObject response = new JSONObject();
+			
 		try {
             Util.cleanUp();
 			String caUrl = Config.CA_ORG1_URL;
@@ -61,6 +68,7 @@ public class QueryAll {
 			Collection<ProposalResponse>  responsesQuery = channelClient.queryByChainCode(Config.CHAINCODE_1_NAME, Config.CHAINCODE_1_QUERY_ALL, null);
 			for (ProposalResponse pres : responsesQuery) {
 				String stringResponse = new String(pres.getChaincodeActionResponsePayload());
+				response.put("result", stringResponse);
 				Logger.getLogger(QueryAll.class.getName()).log(Level.INFO, stringResponse);
 			}
 			
@@ -72,7 +80,9 @@ public class QueryAll {
 			System.out.println("ErrorMessage: " + e.getMessage());
 			System.out.println("ErrorType: " + e.getClass().getCanonicalName());
 			e.printStackTrace();
+			response.put("result", e.getMessage());
 		}
+		return response.toString();
 	}
 
 }
