@@ -26,6 +26,11 @@ import org.hyperledger.fabric.sdk.Orderer;
 import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
 import org.hyperledger.fabric.sdk.TransactionProposalRequest;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.json.JSONObject;
 
 /**
  * Invoke ChangeConsumer Chaincode.
@@ -33,12 +38,18 @@ import org.hyperledger.fabric.sdk.TransactionProposalRequest;
  * @author Mopack
  * @date 2020-07-14
  */
+@RestController
 public class ChangeConsumer {
 
 	private static final byte[] EXPECTED_EVENT_DATA = "!".getBytes(UTF_8);
 	private static final String EXPECTED_EVENT_NAME = "event";
 
-	public static void main(String args[]) {
+	@RequestMapping("/ChangeConsumer")
+	public String InvokeChangeConsumer(
+			@RequestParam(value="id", required=true) String id,
+			@RequestParam(value="name", required=true) String name) {
+		JSONObject response = new JSONObject();
+		
 		try {
             Util.cleanUp();
 			String caUrl = Config.CA_ORG1_URL;
@@ -67,7 +78,7 @@ public class ChangeConsumer {
 			ChaincodeID ccid = ChaincodeID.newBuilder().setName(Config.CHAINCODE_1_NAME).build();
 			request.setChaincodeID(ccid);
 			request.setFcn(Config.CHAINCODE_1_CHANGE_CONSUMER);
-			String[] arguments = { Config.CHAINCODE_1_INDEX_PREFIX + args[0], args[1], Util.DateToString(new Date()) };
+			String[] arguments = { Config.CHAINCODE_1_INDEX_PREFIX + id, name, Util.DateToString(new Date()) };
 			request.setArgs(arguments);
 			request.setProposalWaitTime(1000);
 
@@ -78,11 +89,12 @@ public class ChangeConsumer {
 			tm2.put(EXPECTED_EVENT_NAME, EXPECTED_EVENT_DATA); 
 			request.setTransientMap(tm2);
 			Collection<ProposalResponse> responses = channelClient.sendTransactionProposal(request);
+			
 			for (ProposalResponse res: responses) {
 				Status status = res.getStatus();
-				Logger.getLogger(ChangeConsumer.class.getName()).log(Level.INFO,"Invoked " + Config.CHAINCODE_1_CHANGE_CONSUMER + " on "+Config.CHAINCODE_1_NAME + ". Status - " + status);
+				response.put("status", status);
+				Logger.getLogger(ChangeConsumer.class.getName()).log(Level.INFO, "Invoked " + Config.CHAINCODE_1_CHANGE_CONSUMER + " on "+Config.CHAINCODE_1_NAME + ". Status - " + status);
 			}
-									
 		} catch (Exception e) {
 			/**
 			 * If a shim.Error occurs upon the chaincode, the message will return as ErrorMessage, 
@@ -91,7 +103,10 @@ public class ChangeConsumer {
 			System.out.println("ErrorMessage: " + e.getMessage());
 			System.out.println("ErrorType: " + e.getClass().getCanonicalName());
 			e.printStackTrace();
+			
+			response.put("status", e.getMessage());
 		}
+		return response.toString();
 	}
 
 }
