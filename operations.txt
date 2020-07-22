@@ -1,0 +1,19 @@
+# 開啟Tomcat
+cd /home/Programs/apache-tomcat-9.0.37/bin
+chmod +x startup.sh
+sh ./startup.sh
+
+# Git同步
+cd /home/Github/mopack
+rm -r PoSWeb
+git clone https://github.com/mopack/PoSWeb.git
+
+# 安裝JAR檔案
+cd /home/Github/mopack/PoSWeb
+mvn install
+cd target
+cp PoSWeb-0.0.1-SNAPSHOT.war PoSWeb.war
+cp PoSWeb.war /home/Programs/apache-tomcat-9.0.37/webapps
+
+# 使用Links瀏覽器
+links http://localhost:8080/PoSWeb/MyFirstPage
