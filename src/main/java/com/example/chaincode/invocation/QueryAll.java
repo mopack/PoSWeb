@@ -73,10 +73,9 @@ public class QueryAll {
 			}
 			
 		} catch (Exception e) {
-			/**
-			 * If a shim.Error occurs upon the chaincode, the message will return as ErrorMessage, 
-			 * and the ErrorType should be InvalidArgumentException.
-			 */
+			// If a shim.Error occurs upon the chaincode, the message will return as ErrorMessage, 
+			// and the ErrorType should be InvalidArgumentException.
+			
 			System.out.println("ErrorMessage: " + e.getMessage());
 			System.out.println("ErrorType: " + e.getClass().getCanonicalName());
 			e.printStackTrace();
